@@ -1,12 +1,15 @@
 import { Schema, model } from 'mongoose';
+import validator from 'validator';
 
 // Define the user name schema
 const userNameSchema = new Schema({
   firstName: {
     type: String,
-    trim: true,
     required: [true, 'First name is required'],
+    trim: true,
+    maxlength: [20, 'Cannot be more than 20 characters'],
   },
+
   middleName: {
     trim: true,
     type: String,
@@ -15,6 +18,10 @@ const userNameSchema = new Schema({
     type: String,
     trim: true,
     required: [true, 'Last name is required'],
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} is not valid',
+    },
   },
 });
 
@@ -80,11 +87,19 @@ const studentSchema = new Schema({
   },
   gender: {
     type: String,
-    enum: ['male', 'female', 'others'],
+    enum: ['male', 'female', 'other'],
     required: [true, 'Gender is required'],
   },
   dateOfBirth: { type: String },
-  email: { type: String, required: [true, 'Email is required'], unique: true },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    validate: {
+      validator: (value: string) => validator.isEmail(value),
+      message: '{VALUE} is not valid email',
+    },
+  },
   contactNo: { type: String, required: [true, 'Contact number is required'] },
   emergencyContactNo: {
     type: String,
